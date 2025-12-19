@@ -7,6 +7,10 @@ from PIL import Image
 import numpy as np
 import mediapipe as mp
 
+mp_face_detection = mp.solutions.face_detection
+
+
+
 # -----------------------
 # Config
 # -----------------------
@@ -21,8 +25,6 @@ CLASS_NAMES = [
 ]
 
 MODEL_PATH = "best_model.pth"
-
-mp_face_detection = mp.solutions.face_detection
 
 def detect_face(image: Image.Image):
     img = np.array(image)
