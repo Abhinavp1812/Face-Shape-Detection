@@ -4,8 +4,8 @@ import torch.nn as nn
 import torchvision
 import torchvision.transforms as T
 from PIL import Image
-import cv2
 import numpy as np
+import mediapipe as mp
 
 # -----------------------
 # Config
@@ -22,37 +22,39 @@ CLASS_NAMES = [
 
 MODEL_PATH = "best_model.pth"
 
-# -----------------------
-# Load face detector
-# -----------------------
-face_cascade = cv2.CascadeClassifier(
-    cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
-)
+mp_face_detection = mp.solutions.face_detection
 
-# -----------------------
-# Face detection function
-# -----------------------
 def detect_face(image: Image.Image):
     img = np.array(image)
-    gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+    h, w, _ = img.shape
 
-    faces = face_cascade.detectMultiScale(
-        gray,
-        scaleFactor=1.2,
-        minNeighbors=5,
-        minSize=(80, 80)
-    )
+    with mp_face_detection.FaceDetection(
+        model_selection=1, min_detection_confidence=0.6
+    ) as face_detection:
 
-    if len(faces) == 0:
-        return None
+        results = face_detection.process(img)
 
-    # Select largest face
-    x, y, w, h = sorted(
-        faces, key=lambda f: f[2] * f[3], reverse=True
-    )[0]
+        if not results.detections:
+            return None
 
-    face_crop = img[y:y+h, x:x+w]
-    return Image.fromarray(face_crop)
+        # Take the first detected face
+        detection = results.detections[0]
+        bbox = detection.location_data.relative_bounding_box
+
+        x1 = int(bbox.xmin * w)
+        y1 = int(bbox.ymin * h)
+        bw = int(bbox.width * w)
+        bh = int(bbox.height * h)
+
+        # Add padding (important for chin/forehead)
+        pad = int(0.15 * bh)
+        x1 = max(0, x1 - pad)
+        y1 = max(0, y1 - pad)
+        x2 = min(w, x1 + bw + pad)
+        y2 = min(h, y1 + bh + pad)
+
+        face_crop = img[y1:y2, x1:x2]
+        return Image.fromarray(face_crop)
 
 
 # -----------------------
