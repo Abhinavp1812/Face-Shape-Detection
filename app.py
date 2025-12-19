@@ -145,7 +145,7 @@ if image is not None:
     else:
         st.image(face, caption="Detected Face", width=200)
 
-        with st.spinner("Analyzing face shape..."):
+        with st.spinner("Analyzing face shape......."):
             label, confidence = predict_face_shape(face)
 
         st.success(f"Face Shape: {label}")
