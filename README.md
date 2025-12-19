@@ -68,9 +68,3 @@ EfficientNet-B4 is chosen for its balance between accuracy and computational eff
 
 ---
 
-## Installation
-
-### 1. Clone the repository
-```bash
-git clone https://github.com/your-username/face-shape-detection.git
-cd face-shape-detection
