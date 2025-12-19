@@ -7,7 +7,7 @@ from PIL import Image
 import numpy as np
 import mediapipe as mp
 
-mp_face_detection = mp.solutions.face_detection
+
 
 
 
@@ -27,11 +27,16 @@ CLASS_NAMES = [
 MODEL_PATH = "best_model.pth"
 
 def detect_face(image: Image.Image):
+    import mediapipe as mp
+
+    mp_face_detection = mp.solutions.face_detection
+
     img = np.array(image)
     h, w, _ = img.shape
 
     with mp_face_detection.FaceDetection(
-        model_selection=1, min_detection_confidence=0.6
+        model_selection=1,
+        min_detection_confidence=0.6
     ) as face_detection:
 
         results = face_detection.process(img)
@@ -39,7 +44,6 @@ def detect_face(image: Image.Image):
         if not results.detections:
             return None
 
-        # Take the first detected face
         detection = results.detections[0]
         bbox = detection.location_data.relative_bounding_box
 
@@ -48,7 +52,6 @@ def detect_face(image: Image.Image):
         bw = int(bbox.width * w)
         bh = int(bbox.height * h)
 
-        # Add padding (important for chin/forehead)
         pad = int(0.15 * bh)
         x1 = max(0, x1 - pad)
         y1 = max(0, y1 - pad)
@@ -57,7 +60,6 @@ def detect_face(image: Image.Image):
 
         face_crop = img[y1:y2, x1:x2]
         return Image.fromarray(face_crop)
-
 
 # -----------------------
 # Load model
