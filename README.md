@@ -1,3 +1,6 @@
+
+Try this app : https://huggingface.co/spaces/abhinav1812/face_shape_detection
+
 # Face Shape Detection using EfficientNet-B4
 
 This project is a Streamlit web application that detects a person’s face shape from an image using a deep learning model. The app supports both live camera input and image uploads, automatically detects the face, and predicts the face shape along with a confidence score.
